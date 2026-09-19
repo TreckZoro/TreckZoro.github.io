@@ -10928,3 +10928,99 @@ textarea.form-control-lg {
 }
 
 
+/* 
+=============================================
+============= RULETA ========================
+=============================================
+*/
+
+.roulette-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.roulette-wrapper {
+    position: relative;
+    width: 450px;
+    height: 450px;
+}
+
+/* RULETA */
+
+#roulette {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+    border: 8px solid #212529;
+
+    /* La ruleta gira desde su centro */
+    transform-origin: center center;
+
+    /* Animación */
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+
+/* FLECHA */
+
+.pointer {
+    position: absolute;
+
+    /* Colocada justo encima de la ruleta */
+    top: -15px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 0;
+    height: 0;
+
+    /*
+     * Triángulo apuntando hacia abajo.
+     */
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 40px solid #dc3545;
+
+    /*
+     * La flecha queda por encima del canvas.
+     */
+    z-index: 10;
+}
+
+
+/* BOTÓN */
+
+#spinButton {
+    margin-top: 30px;
+
+    font-size: 1.3rem;
+    padding: 12px 40px;
+}
+
+
+/* RESULTADO */
+
+#result {
+    margin-top: 25px;
+
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    min-height: 40px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 500px) {
+
+    .roulette-wrapper {
+        width: 320px;
+        height: 320px;
+    }
+}
