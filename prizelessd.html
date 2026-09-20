@@ -3,28 +3,27 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Tabla de tipos Pokémon para el Ultra Sun Randomlocke" />
-        <meta name="author" content="" />
-        <title>Shin-Shibuya RandomLocke</title>
 
-        <!-- Favicon-->
+        <title>Ruleta - Ultra Sol Randomlocke</title>
+
         <link rel="icon" type="image/x-icon" href="assets/favicon.jpg" />
-
-        <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+
+        
     </head>
 
     <body>
 
-        <!-- Responsive navbar-->
+        <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
 
                 <a class="navbar-brand" href="index.html">
                     <img src="assets/logo.png"
-                         alt="Logo Ultra Sol Randomlocke"
-                         class="me-2"
-                         height="50">
+                        alt="Logo Ultra Sol Randomlocke"
+                        class="me-2"
+                        height="50">
+
                     <span>Ultra Sol Randomlocke</span>
                 </a>
 
@@ -35,6 +34,7 @@
                         aria-controls="navbarSupportedContent"
                         aria-expanded="false"
                         aria-label="Toggle navigation">
+
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -61,6 +61,8 @@
                         </li>
 
                         <li class="nav-item"><a class="nav-link" href="nohitters.html">No hitters</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="prize.html">Ruleta premios</a></li> -->
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ruleta de premios</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -71,29 +73,28 @@
 
                         <li class="nav-item dropdown">
 
-                            <a class="nav-link dropdown-toggle active"
-                               id="navbarDropdown"
-                               href="#"
-                               role="button"
-                               data-bs-toggle="dropdown"
-                               aria-expanded="false"
-                               aria-current="page">
+                            <a class="nav-link dropdown-toggle"
+                            id="navbarDropdown"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
                                 Herramientas de Utilidad
+
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end"
                                 aria-labelledby="navbarDropdown">
 
                                 <li>
-                                    <a class="dropdown-item active" href="natures.html">
+                                    <a class="dropdown-item" href="natures.html">
                                         Naturalezas
                                     </a>
                                 </li>
 
                                 <li>
-                                    <a class="dropdown-item "
-                                       aria-current="page"
-                                       href="tabletype.html">
+                                    <a class="dropdown-item" href="tabletype.html">
                                         Tabla de Tipos
                                     </a>
                                 </li>
@@ -104,67 +105,71 @@
 
                                 <li>
                                     <a class="dropdown-item"
-                                       href="https://pokemondb.net/pokedex/all"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
+                                    href="https://pokemondb.net/pokedex/all"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
                                         Stats Pokémon
                                     </a>
                                 </li>
-
                                 <li><a class="dropdown-item" href="https://pokemondb.net/pokedex/shiny" target="_blank" rel="noopener noreferrer">Shiny Pokémon</a></li>
+
                             </ul>
+
                         </li>
 
                     </ul>
+
                 </div>
             </div>
         </nav>
 
 
-        <!-- Page content-->
-        <main class="container">
+        <!-- Contenido -->
+
+        <div class="container">
 
             <div class="text-center mt-5">
 
-                <h1>Naturalezas</h1>
+                <h1>🎰 Ruleta Randomlocke</h1>
 
                 <p class="lead">
-                    Comprueba en cuales estadisticas sale beneficiado tu pokémon.
-                </p>
-
-                <p>
-                    Dentro del juego tambien puedes saber que sube o que baja, rojo sube esa estadisitica, azul la baja.
-                    En caso de no haber ninguna es naturaleza neutra. Para revisar cuales son las naturalezas ideales de tus pokemon puedes revisar:
-                    <a href="https://www.smogon.com/dex/sm/pokemon/"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        Smogon de Sun and Moon
-                    </a>.
+                    ¡Haz girar la ruleta y descubre tu premio NO HIT!
                 </p>
 
             </div>
 
 
-            <!-- Tabla de Tipos A -->
-            <section class="mt-5">
+            <div class="roulette-container">
 
-                <div class="text-center">
-                    <img src="assets/Naturalezas.png"
-                         alt="Naturalezas"
-                         class="img-fluid type-chart">
+                <div class="roulette-wrapper">
+
+                    <div class="pointer"></div>
+
+                    <canvas id="roulette"
+                            width="450"
+                            height="450">
+                    </canvas>
+
                 </div>
 
-            </section>
+
+                <button id="spinButton"
+                        class="btn btn-danger">
+                    🎲 GIRAR
+                </button>
 
 
-           
+                <div id="result"></div>
 
-        </main>
+            </div>
+
+        </div>
 
 
-        <!-- Bootstrap core JS-->
+        <!-- Bootstrap -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/rouletteprizeslessd.js"></script>
+        
 
     </body>
 </html>
-
