@@ -15,7 +15,12 @@ async function cargarParticipantes() {
 
     const participantes = await respuesta.json();
 
-    participantes.forEach((participante) => {
+    const participantsActivos = participantes.filter(
+        participant => participant.activo
+    );
+
+    participantsActivos.forEach((participante) => {
+    //participantes.forEach((participante) => {
 
         contenedor.innerHTML += `
             <div class="col-12 col-md-6 col-lg-4 mb-4">
