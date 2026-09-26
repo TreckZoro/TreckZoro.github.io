@@ -10884,6 +10884,54 @@ textarea.form-control-lg {
     font-weight: bold;
 }
 
+/*  
+=================================
+        TIENDA
+=================================
+*/
+
+.shop-title {
+    color: #e03a3a;
+    border-left: 6px solid #d11d1d;
+    padding-left: 12px;
+    font-weight: bold;
+}
+
+.shop-table {
+    width: 100%;
+    border: 2px solid #e03a3a;
+}
+
+/* Ancho de las columnas */
+.shop-table th:first-child,
+.shop-table td:first-child {
+    width: 70%;
+}
+
+.shop-table th:last-child,
+.shop-table td:last-child {
+    width: 30%;
+}
+
+/* Alineación de la columna de niveles */
+.shop-table th:last-child,
+.shop-table td:last-child {
+    text-align: center;
+}
+
+/* Cabecera naranja */
+.shop-table thead {
+    background-color: #e03a3a;
+    color: white;
+}
+
+/* Efecto al pasar el ratón */
+.shop-table tbody tr:hover {
+    background-color: #fff1df;
+}
+
+
+
 
 /* Tablas de Level Caps */
 .level-cap-table {

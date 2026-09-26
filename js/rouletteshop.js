@@ -5,42 +5,42 @@
 
 const prizes = [
     {
-        name: "Captura extra",
-        probability: 10
-    },
-    {
-        name: "Cambio de natu",
-        probability: 10
-    },
-    {
-        name: "Intercambio Pokémon",
+        name: "Obj evo",
         probability: 15
     },
     {
-        name: "Capsula habilidad",
-        probability: 10
+        name: "Capsula Habilidad",
+        probability: 5
     },
     {
-        name: "Revivir",
-        probability: 1
+        name: "Refresco",
+        probability: 20
     },
     {
-        name: "Todas las piedras evolutivas",
+        name: "Less Death",
+        probability: 6
+    },
+    {
+        name: "Obj competi",
         probability: 15
     },
     {
-        name: "50 Monedas de tienda",
-        probability: 15
-    },
-    
-    {
-        name: "Objeto curativo",
-        probability: 15
+        name: "Mega Pulsera",
+        probability: 2
     },
     {
-        name: "Moneda salvación",
-        probability: 9
-    }
+        name: "25 Monedas",
+        probability: 25
+    },
+    {
+        name: "No Hit",
+        probability:  2
+    },
+    {
+        name: "Restaura todo",
+        probability: 15
+    },
+   
 ];
 
 

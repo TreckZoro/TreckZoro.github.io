@@ -116,6 +116,37 @@ app.get("/api/participants/:discord_id", async (req, res) => {
     res.json(resultado);
 });
 
+app.get("/api/participants/:discord_id/coins", async (req, res) => {
+
+    const discord_id = String(req.params.discord_id);
+
+    const { data, error } = await supabase
+        .from("participants")
+        .select("*")
+        .eq("discord_id", discord_id)
+        .single();
+
+    if (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            error: "Error obteniendo monedas"
+        });
+    }
+
+    if (!data) {
+        return res.status(404).json({
+            error: "Participante no encontrado"
+        });
+    }
+
+    const participante = data;
+
+    res.json(participante.monedas);
+});
+
+
+
 // ========================================
 // POST 
 // ========================================
@@ -187,6 +218,61 @@ app.post("/api/participants/:discord_id/death/:slot", async (req, res) => {
         console.error(errorMuertes);
         return res.status(500).json({
             error: "Error actualizando muertes"
+        });
+    }
+
+    res.json(data);
+});
+
+app.post("/api/participants/:discord_id/coins/add/", async (req, res) => {
+
+    const discord_id = String(req.params.discord_id);
+    const quantity = Number(req.body.monedas);
+
+    // Comprobar slot
+    if (!Number.isInteger(quantity) || quantity < 0) {
+        return res.status(400).json({
+            error: "La cantidad debe ser un número entero igual o mayor que 0"
+        });
+    }
+
+    // Buscar participante
+    const { data: participante, error: errorBusqueda } = await supabase
+        .from("participants")
+        .select("*")
+        .eq("discord_id", discord_id)
+        .maybeSingle();
+
+    if (errorBusqueda) {
+        console.error(errorBusqueda);
+        return res.status(500).json({
+            error: "Error obteniendo participante"
+        });
+    }
+
+    if (!participante) {
+        return res.status(404).json({
+            error: "Usuario no encontrado"
+        });
+    }
+
+
+    // Incrementar muertes
+    const monedasTotales = participante.monedas + quantity;
+
+    const { data, error: errorCoinsAdd } = await supabase
+        .from("participants")
+        .update({
+            monedas: monedasTotales
+        })
+        .eq("discord_id", discord_id)
+        .select()
+        .single();
+
+    if (errorCoinsAdd) {
+        console.error(errorCoinsAdd);
+        return res.status(500).json({
+            error: "Error actualizando monedas"
         });
     }
 
@@ -296,6 +382,71 @@ app.put("/api/participants/:discord_id/pokemon/:slot", async (req, res) => {
 });
 
 
+app.put("/api/participants/:discord_id/coins/trade", async (req, res) => {
+
+    const discord_id = String(req.params.discord_id);
+
+    const quantity = Number(req.body.monedas);
+
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+        return res.status(400).json({
+            error: "La cantidad debe ser un número entero mayor que 0"
+        });
+    }
+
+    // Buscar participante
+    const { data: participante, error: errorBusqueda } = await supabase
+        .from("participants")
+        .select("*")
+        .eq("discord_id", discord_id)
+        .maybeSingle();
+
+    if (errorBusqueda) {
+        console.error(errorBusqueda);
+        return res.status(500).json({
+            error: "Error obteniendo participante"
+        });
+    }
+
+    if (!participante) {
+        return res.status(404).json({
+            error: "Usuario no encontrado"
+        });
+    }
+
+    if (participante.monedas < quantity) {
+        return res.status(400).json({
+            error: "No tienes suficientes monedas"
+        });
+    }
+
+    const monedasTotales = participante.monedas - quantity;
+
+    // Actualizar en Supabase
+    const { data, error } = await supabase
+        .from("participants")
+        .update({
+            monedas: monedasTotales
+        })
+        .eq("discord_id", discord_id)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error actualizando Monedas"
+        });
+    }
+
+    if (!data) {
+        return res.status(404).json({
+            error: "Participante no encontrado"
+        });
+    }
+
+    res.json(data);
+});
 
 // =====================
 // PATCH
