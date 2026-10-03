@@ -66,12 +66,19 @@ app.get("/api/participants", async (req, res) => {
 
 });
 
-app.get("/api/reservas/libres", async (req, res) => {
+app.get("/api/reservas", async (req, res) => {
 
     const { data, error } = await supabase
         .from("reservas")
-        .select("id, fecha, hora")
-        .is("discord_id", null)
+        .select(`
+            id,
+            fecha,
+            hora,
+            discord_id,
+            participants (
+                nombre
+            )
+        `)
         .order("fecha", { ascending: true })
         .order("hora", { ascending: true });
 
@@ -82,14 +89,18 @@ app.get("/api/reservas/libres", async (req, res) => {
         });
     }
 
-    res.json(data);
+    const reservas = data.map(reserva => ({
+        id: reserva.id,
+        fecha: reserva.fecha,
+        hora: reserva.hora,
+        discord_id: reserva.discord_id,
+        nombre: reserva.participants?.nombre ?? null
+    }));
 
-   
-
+    res.json(reservas);
 });
 
 app.get("/api/reservas/libres", async (req, res) => {
-    //console.log("GET /api/participants recibido");
 
     const { data, error } = await supabase
         .from("reservas")
