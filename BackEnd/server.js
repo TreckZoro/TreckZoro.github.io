@@ -66,6 +66,51 @@ app.get("/api/participants", async (req, res) => {
 
 });
 
+app.get("/api/reservas/libres", async (req, res) => {
+
+    const { data, error } = await supabase
+        .from("reservas")
+        .select("id, fecha, hora")
+        .is("discord_id", null)
+        .order("fecha", { ascending: true })
+        .order("hora", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error obteniendo reservas"
+        });
+    }
+
+    res.json(data);
+
+   
+
+});
+
+app.get("/api/reservas/libres", async (req, res) => {
+    //console.log("GET /api/participants recibido");
+
+    const { data, error } = await supabase
+        .from("reservas")
+        .select("id, fecha, hora")
+        .is("discord_id", null)
+        .order("fecha", { ascending: true })
+        .order("hora", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error obteniendo reservas"
+        });
+    }
+
+    res.json(data);
+
+   
+
+});
+
 // ========================================
 // GET 
 // ========================================
@@ -277,6 +322,98 @@ app.post("/api/participants/:discord_id/coins/add/", async (req, res) => {
     }
 
     res.json(data);
+});
+
+
+app.post("/api/reservas/:discord_id/reservar", async (req, res) => {
+
+    const discord_id = String(req.params.discord_id);
+    const fecha = req.body.fecha;
+    const hora = req.body.hora;
+
+    // Comprobar que se han enviado fecha y hora
+    if (!fecha || !hora) {
+        return res.status(400).json({
+            error: "Debes proporcionar una fecha y una hora"
+        });
+    }
+
+    // Comprobar que existe el participante
+    const { data: participante, error: errorParticipante } = await supabase
+        .from("participants")
+        .select("discord_id, nombre")
+        .eq("discord_id", discord_id)
+        .maybeSingle();
+
+    if (errorParticipante) {
+        console.error(errorParticipante);
+        return res.status(500).json({
+            error: "Error obteniendo participante"
+        });
+    }
+
+    if (!participante) {
+        return res.status(404).json({
+            error: "Participante no encontrado"
+        });
+    }
+
+    // Comprobar que la reserva existe y está libre
+    const { data: reserva, error: errorReserva } = await supabase
+        .from("reservas")
+        .select("id, fecha, hora, discord_id")
+        .eq("fecha", fecha)
+        .eq("hora", hora)
+        .maybeSingle();
+
+    if (errorReserva) {
+        console.error(errorReserva);
+        return res.status(500).json({
+            error: "Error obteniendo reserva"
+        });
+    }
+
+    if (!reserva) {
+        return res.status(404).json({
+            error: "Ese horario no existe"
+        });
+    }
+
+    if (reserva.discord_id !== null) {
+        return res.status(400).json({
+            error: "Este horario ya está reservado"
+        });
+    }
+
+    // Reservar el horario
+    const { data, error } = await supabase
+        .from("reservas")
+        .update({
+            discord_id: discord_id
+        })
+        .eq("fecha", fecha)
+        .eq("hora", hora)
+        .is("discord_id", null)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error reservando el horario"
+        });
+    }
+
+    if (!data) {
+        return res.status(400).json({
+            error: "El horario ya no está disponible"
+        });
+    }
+
+    res.json({
+        mensaje: "Reserva realizada correctamente",
+        reserva: data
+    });
 });
 
 // ========================================
