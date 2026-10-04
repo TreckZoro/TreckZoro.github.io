@@ -41,7 +41,7 @@ async function cargarParticipantes() {
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold stat-label">🏅 Bosses:</span>
                             <span class="bosses-number">
-                                ${participante.bosses} / 39
+                                ${participante.bosses} / 38
                             </span>
                         </div>
 
