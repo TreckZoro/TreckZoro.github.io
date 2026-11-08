@@ -3,7 +3,7 @@
 // PREMIOS DE LA RULETA
 // =========================================
 
-const prizes = [
+/* const prizes = [
     {
         name: "Captura extra",
         probability: 10
@@ -41,8 +41,40 @@ const prizes = [
         name: "Moneda salvación",
         probability: 9
     }
-];
+]; */
 
+const prizes = [
+    { name: "1", probability: 3.3335 },
+    { name: "2", probability: 3.3335 },
+    { name: "3", probability: 3.3335 },
+    { name: "4", probability: 3.3335 },
+    { name: "5", probability: 3.3335 },
+    { name: "6", probability: 3.3335 },
+    { name: "7", probability: 3.3335 },
+    { name: "8", probability: 3.3335 },
+    { name: "9", probability: 3.3335 },
+    { name: "10", probability: 3.3335 },
+    { name: "11", probability: 3.3335 },
+    { name: "12", probability: 3.3335 },
+    { name: "13", probability: 3.3335 },
+    { name: "14", probability: 3.3335 },
+    { name: "15", probability: 3.3335 },
+    { name: "16", probability: 3.3335 },
+    { name: "17", probability: 3.3335 },
+    { name: "18", probability: 3.3335 },
+    { name: "19", probability: 3.3335 },
+    { name: "20", probability: 3.3335 },
+    { name: "21", probability: 3.3335 },
+    { name: "22", probability: 3.3335 },
+    { name: "23", probability: 3.3335 },
+    { name: "24", probability: 3.3335 },
+    { name: "25", probability: 3.3335 },
+    { name: "26", probability: 3.3335 },
+    { name: "27", probability: 3.3335 },
+    { name: "28", probability: 3.3335 },
+    { name: "29", probability: 3.3335 },
+    { name: "30", probability: 3.3335 }
+];
 
 // =========================================
 // CONFIGURACIÓN
@@ -77,7 +109,8 @@ if (totalProbability !== 100) {
 // COLORES
 // =========================================
 
-const colors = [
+//Originales
+/* const colors = [
     "#ff595e",
     "#ffca3a",
     "#8ac926",
@@ -87,6 +120,41 @@ const colors = [
     "#00b4d8",
     "#d90429",
     "#c7c429"
+]; */
+
+const colors = [
+    "#C0392B",
+    "#2471A3",
+    "#7D3C98",
+    "#117864",
+    "#A04000",
+    "#34495E",
+    "#6C3483",
+    "#1F618D",
+    "#922B21",
+    "#2874A6",
+
+    "#AF601A",
+    "#512E5F",
+    "#148F77",
+    "#2E4053",
+    "#884EA0",
+    "#196F3D",
+    "#A93226",
+    "#21618C",
+    "#784212",
+    "#4A235A",
+
+    "#0E6655",
+    "#5B2C6F",
+    "#1A5276",
+    "#873600",
+    "#117A65",
+    "#633974",
+    "#2C3E50",
+    "#943126",
+    "#1B4F72",
+    "#6E2C00"
 ];
 
 
@@ -415,8 +483,9 @@ document
 
         setTimeout(function () {
 
-            document.getElementById("result").innerHTML =
-                `🎉 ¡Has conseguido: <strong>${prizes[result].name}</strong>!`;
+            document.getElementById("result").innerHTML = 
+                `🎉 ¡El numero elegido es el: <strong>${prizes[result].name}</strong>!`;
+                /* `🎉 ¡Has conseguido: <strong>${prizes[result].name}</strong>!`; */ //OLD
 
             spinning = false;
 

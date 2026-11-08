@@ -3,7 +3,7 @@
 // PREMIOS DE LA RULETA
 // =========================================
 
-const prizes = [
+/* const prizes = [
     {
         name: "Cambio natu",
         probability: 2
@@ -36,11 +36,28 @@ const prizes = [
         name: "Intercambio PKM x Tramo",
         probability: 19
     },
+]; */
 
-
-    
+const prizes = [
+    { name: "Normal", probability: 5.556 },
+    { name: "Lucha", probability: 5.556 },
+    { name: "Volador", probability: 5.556 },
+    { name: "Veneno", probability: 5.556 },
+    { name: "Tierra", probability: 5.556 },
+    { name: "Roca", probability: 5.556 },
+    { name: "Bicho", probability: 5.556 },
+    { name: "Fantasma", probability: 5.556 },
+    { name: "Acero", probability: 5.556 },
+    { name: "Fuego", probability: 5.556 },
+    { name: "Agua", probability: 5.556 },
+    { name: "Planta", probability: 5.556 },
+    { name: "Eléctrico", probability: 5.556 },
+    { name: "Psíquico", probability: 5.556 },
+    { name: "Hielo", probability: 5.556 },
+    { name: "Dragón", probability: 5.556 },
+    { name: "Hada", probability: 5.556 },
+    { name: "Siniestro", probability: 5.556 }
 ];
-
 
 // =========================================
 // CONFIGURACIÓN
@@ -75,7 +92,7 @@ if (totalProbability !== 100) {
 // COLORES
 // =========================================
 
-const colors = [
+/* const colors = [
     "#ff595e",
     "#ffca3a",
     "#8ac926",
@@ -85,8 +102,28 @@ const colors = [
     "#00b4d8",
     "#d90429",
     "#c7c429"
-];
+]; */
 
+const colors = [
+    "#A8A878", // Normal
+    "#C03028", // Lucha
+    "#A890F0", // Volador
+    "#705898", // Veneno
+    "#E0C068", // Tierra
+    "#B8A038", // Roca
+    "#A8B820", // Bicho
+    "#705848", // Fantasma
+    "#B8B8D0", // Acero
+    "#F08030", // Fuego
+    "#6890F0", // Agua
+    "#78C850", // Planta
+    "#F8D030", // Eléctrico
+    "#F85888", // Psíquico
+    "#98D8D8", // Hielo
+    "#7038F8", // Dragón
+    "#EE99AC", // Hada
+    "#705848"  // Siniestro
+];
 
 // =========================================
 // DIBUJAR RULETA
@@ -414,7 +451,7 @@ document
         setTimeout(function () {
 
             document.getElementById("result").innerHTML =
-                `🎉 ¡Has conseguido: <strong>${prizes[result].name}</strong>!`;
+                `🎉 ¡Te ha tocado tipo: <strong>${prizes[result].name}</strong>!`;
 
             spinning = false;
 

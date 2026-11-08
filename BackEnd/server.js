@@ -15,17 +15,411 @@ app.use(express.json());
 // Obtener todos los Participantes
 // ========================================
 
-app.get("/", (req, res) => {
-    res.send("¡ESTE ES MI BACKEND!");
-});
 
-app.get("/api/participants", async (req, res) => {
-    //console.log("GET /api/participants recibido");
+//Informacion general
+app.get("/api/teams", async (req, res) => {
 
     const { data, error } = await supabase
-        .from("participants")
-        .select("*")
-        .order("id", { ascending: true });;
+        .from("equipos_locke")
+        .select(`
+            id,
+            nombre,
+            vidas,
+            participantes (
+                id,
+                nombre,
+                foto,
+                bosses,
+                pokemon!pokemon_participante_id_fkey (
+                    especie_id,
+                    mote,
+                    posicion,
+                    estado,
+                    ubicacion,
+                    pokemon_especies (
+                        nombre_es,
+                        nombre_en
+                    )
+                )
+            )
+        `)
+        .eq("participantes.pokemon.estado", "Vivo")
+        .eq("participantes.pokemon.ubicacion", "Equipo")
+        .order("id", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error obteniendo equipos"
+        });
+    }
+
+    const teams = data.map(team => ({
+        id: team.id,
+        nombre: team.nombre,
+        vidas: team.vidas,
+
+        participantes: (team.participantes ?? []).map(participant => ({
+            id: participant.id,
+            nombre: participant.nombre,
+            foto: participant.foto,
+            bosses: participant.bosses,
+
+            pokemon: (participant.pokemon ?? []).map(pokemon => ({
+                especie_id: pokemon.especie_id,
+                nombre: pokemon.pokemon_especies?.nombre_es ?? null,
+                mote: pokemon.mote,
+                posicion: pokemon.posicion
+            }))
+        }))
+    }));
+
+    res.json(teams);
+});
+
+
+
+app.get("/api/teams/:nombre", async (req, res) => {
+    const { nombre } = req.params;
+
+    const { data, error } = await supabase
+        .from("equipos_locke")
+        .select(`
+            id,
+            nombre,
+            vidas,
+            participantes (
+                id,
+                nombre,
+                foto,
+                bosses,
+                pokemon!pokemon_participante_id_fkey (
+                    especie_id,
+                    mote,
+                    posicion,
+                    estado,
+                    ubicacion,
+                    pokemon_especies (
+                        nombre_es,
+                        nombre_en
+                    )
+                )
+            )
+        `)
+        .eq("nombre", nombre)
+        .eq("participantes.pokemon.estado", "Vivo")
+        .eq("participantes.pokemon.ubicacion", "Equipo");
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error obteniendo equipos"
+        });
+    }
+
+    const teams = data.map(team => ({
+        id: team.id,
+        nombre: team.nombre,
+        vidas: team.vidas,
+
+        participantes: (team.participantes ?? []).map(participant => ({
+            id: participant.id,
+            nombre: participant.nombre,
+            foto: participant.foto,
+            bosses: participant.bosses,
+
+            pokemon: (participant.pokemon ?? []).map(pokemon => ({
+                especie_id: pokemon.especie_id,
+                nombre: pokemon.pokemon_especies?.nombre_es ?? null,
+                mote: pokemon.mote,
+                posicion: pokemon.posicion
+            }))
+        }))
+    }));
+
+    res.json(teams);
+});
+
+
+app.get("/api/participants/:discord_id", async (req, res) => {
+
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+        .from("participantes")
+        .select(`
+            id,
+            discord_id,
+            nombre,
+            foto,
+            equipo_locke_id,
+            bosses,
+            pokemon!pokemon_participante_id_fkey (
+                id,
+                especie_id,
+                mote,
+                estado,
+                ubicacion,
+                posicion,
+                lugar_obtencion,
+                metodo_obtencion,
+                pokemon_especies (
+                    nombre_es,
+                    nombre_en
+                )
+            )
+        `)
+        .eq("discord_id", id)
+        .single();
+
+    if (error) {
+        console.error(error);
+        return res.status(404).json({
+            error: "Participante no encontrado"
+        });
+    }
+
+    const participant = {
+        id: data.id,
+        discord_id: data.discord_id,
+        nombre: data.nombre,
+        foto: data.foto,
+        equipo_locke_id: data.equipo_locke_id,
+        bosses: data.bosses,
+
+        pokemon: (data.pokemon ?? []).map(pokemon => ({
+            id: pokemon.id,
+            especie_id: pokemon.especie_id,
+            nombre: pokemon.pokemon_especies?.nombre_es ?? null,
+            mote: pokemon.mote,
+            estado: pokemon.estado,
+            ubicacion: pokemon.ubicacion,
+            posicion: pokemon.posicion,
+            lugar_obtencion: pokemon.lugar_obtencion,
+            metodo_obtencion: pokemon.metodo_obtencion
+        }))
+    };
+
+    res.json(participant);
+});
+
+
+/* app.get("/api/pokemon", async (req, res) => {
+
+    const { data, error } = await supabase
+        .from("pokemon")
+        .select(`
+            id,
+            especie_id,
+            mote,
+            estado,
+            ubicacion,
+            posicion,
+            lugar_obtencion,
+            metodo_obtencion,
+
+            pokemon_especies (
+                nombre_es,
+                nombre_en
+            ),
+
+            participantes!pokemon_participante_id_fkey (
+                id,
+                nombre,
+                foto
+            ),
+
+            participante_original:participantes!pokemon_participante_original_id_fkey (
+                id,
+                nombre
+            )
+        `)
+        .order("id", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error obteniendo Pokémon"
+        });
+    }
+
+    const pokemon = data.map(p => ({
+        id: p.id,
+        especie_id: p.especie_id,
+        nombre: p.pokemon_especies?.nombre_es ?? null,
+        mote: p.mote,
+        estado: p.estado,
+        ubicacion: p.ubicacion,
+        posicion: p.posicion,
+
+        participante: p.participantes,
+        participante_original: p.participante_original
+    }));
+
+    res.json(pokemon);
+}); */
+
+app.get("/api/pokemon", async (req, res) => {
+
+    // =========================================
+    // 1. OBTENER Y VALIDAR PARÁMETROS
+    // =========================================
+
+    const page = Number.parseInt(req.query.page, 10) || 1;
+    const limit = Number.parseInt(req.query.limit, 10) || 20;
+
+    const participante = req.query.participante;
+    const estado = req.query.estado;
+    const ubicacion = req.query.ubicacion;
+
+    if (page < 1 || limit < 1 || limit > 100) {
+        return res.status(400).json({
+            error: "Parámetros de paginación no válidos"
+        });
+    }
+
+    if (
+        participante !== undefined &&
+        (!/^\d+$/.test(participante) || Number(participante) <= 0)
+    ) {
+        return res.status(400).json({
+            error: "ID de participante no válido"
+        });
+    }
+
+    if (estado && !["Vivo", "Muerto"].includes(estado)) {
+        return res.status(400).json({
+            error: "Estado no válido"
+        });
+    }
+
+    if (ubicacion && !["Equipo", "Caja"].includes(ubicacion)) {
+        return res.status(400).json({
+            error: "Ubicación no válida"
+        });
+    }
+
+    // Calcular rango de paginación
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+
+    // =========================================
+    // 2. CONSTRUIR CONSULTA
+    // =========================================
+
+    let query = supabase
+        .from("pokemon")
+        .select(`
+            id,
+            especie_id,
+            mote,
+            estado,
+            ubicacion,
+            posicion,
+            lugar_obtencion,
+            metodo_obtencion,
+
+            pokemon_especies (
+                nombre_es,
+                nombre_en
+            ),
+
+            participantes!pokemon_participante_id_fkey (
+                id,
+                nombre,
+                foto
+            ),
+
+            participante_original:participantes!pokemon_participante_original_id_fkey (
+                id,
+                nombre
+            )
+        `, {
+            count: "exact"
+        })
+        .order("id", { ascending: true })
+        .range(from, to);
+
+
+    // =========================================
+    // 3. APLICAR FILTROS
+    // =========================================
+
+    if (participante) {
+        query = query.eq("participante_id", Number(participante));
+    }
+
+    if (estado) {
+        query = query.eq("estado", estado);
+    }
+
+    if (ubicacion) {
+        query = query.eq("ubicacion", ubicacion);
+    }
+
+
+    // =========================================
+    // 4. EJECUTAR CONSULTA
+    // =========================================
+
+    const { data, error, count } = await query;
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Error obteniendo Pokémon"
+        });
+    }
+
+
+    // =========================================
+    // 5. TRANSFORMAR RESULTADOS
+    // =========================================
+
+    const pokemon = data.map(p => ({
+        id: p.id,
+        especie_id: p.especie_id,
+
+        nombre: p.pokemon_especies?.nombre_es ?? null,
+        nombre_en: p.pokemon_especies?.nombre_en ?? null,
+
+        mote: p.mote,
+        estado: p.estado,
+        ubicacion: p.ubicacion,
+        posicion: p.posicion,
+
+        lugar_obtencion: p.lugar_obtencion,
+        metodo_obtencion: p.metodo_obtencion,
+
+        participante: p.participantes,
+        participante_original: p.participante_original
+    }));
+
+
+    // =========================================
+    // 6. RESPUESTA
+    // =========================================
+
+    res.json({
+        pokemon,
+
+        paginacion: {
+            pagina_actual: page,
+            resultados_por_pagina: limit,
+            total_resultados: count,
+            total_paginas: Math.ceil(count / limit)
+        }
+    });
+
+});
+
+app.get("/api/pokemon/filters", async (req, res) => {
+
+    const { data, error } = await supabase
+        .from("participantes")
+        .select("id, nombre")
+        .order("nombre", { ascending: true });
 
     if (error) {
         console.error(error);
@@ -34,605 +428,522 @@ app.get("/api/participants", async (req, res) => {
         });
     }
 
-    /* res.json(data); */
-
-    const participants = data.map(participant => {
-        const pokemon = [
-            participant.pokemon_1,
-            participant.pokemon_2,
-            participant.pokemon_3,
-            participant.pokemon_4,
-            participant.pokemon_5,
-            participant.pokemon_6
-        ];
-
-        const {
-            pokemon_1,
-            pokemon_2,
-            pokemon_3,
-            pokemon_4,
-            pokemon_5,
-            pokemon_6,
-            ...rest
-        } = participant;
-
-        return {
-            ...rest,
-            pokemon
-        };
-    });
-
-    res.json(participants);
-
-});
-
-app.get("/api/reservas", async (req, res) => {
-
-    const { data, error } = await supabase
-        .from("reservas")
-        .select(`
-            id,
-            fecha,
-            hora,
-            discord_id,
-            participants (
-                nombre
-            )
-        `)
-        .order("fecha", { ascending: true })
-        .order("hora", { ascending: true });
-
-    if (error) {
-        console.error(error);
-        return res.status(500).json({
-            error: "Error obteniendo reservas"
-        });
-    }
-
-    const reservas = data.map(reserva => ({
-        id: reserva.id,
-        fecha: reserva.fecha,
-        hora: reserva.hora,
-        discord_id: reserva.discord_id,
-        nombre: reserva.participants?.nombre ?? null
-    }));
-
-    res.json(reservas);
-});
-
-app.get("/api/reservas/libres", async (req, res) => {
-
-    const { data, error } = await supabase
-        .from("reservas")
-        .select("id, fecha, hora")
-        .is("discord_id", null)
-        .order("fecha", { ascending: true })
-        .order("hora", { ascending: true });
-
-    if (error) {
-        console.error(error);
-        return res.status(500).json({
-            error: "Error obteniendo reservas"
-        });
-    }
-
     res.json(data);
 
-   
-
 });
 
-// ========================================
-// GET 
-// ========================================
 
-app.get("/api/participants/:discord_id", async (req, res) => {
+/// ===================================
+//              POST
+//=====================================
+app.post("/api/participants/:discord_id/boss", async (req, res) => {
 
-    const discord_id = String(req.params.discord_id);
+    const { discord_id } = req.params;
 
-    const { data, error } = await supabase
-        .from("participants")
-        .select("*")
+    // 1. Buscar participante
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id, bosses")
         .eq("discord_id", discord_id)
         .single();
 
-    if (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            error: "Error obteniendo participante"
-        });
-    }
-
-    if (!data) {
+    if (participantError || !participant) {
         return res.status(404).json({
             error: "Participante no encontrado"
         });
     }
 
-    const participante = data;
-    const resultado = {
-        id: participante.id,
-        discord_id: participante.discord_id,
-        nombre: participante.nombre,
-        bosses: participante.bosses,
-        muertes: participante.muertes,
-        isla: participante.isla,
-        foto: participante.foto,
-        pokemon: [
-            participante.pokemon_1,
-            participante.pokemon_2,
-            participante.pokemon_3,
-            participante.pokemon_4,
-            participante.pokemon_5,
-            participante.pokemon_6
-        ]
-    };
-
-    res.json(resultado);
-});
-
-app.get("/api/participants/:discord_id/coins", async (req, res) => {
-
-    const discord_id = String(req.params.discord_id);
-
+    // 2. Incrementar contador
     const { data, error } = await supabase
-        .from("participants")
-        .select("*")
-        .eq("discord_id", discord_id)
+        .from("participantes")
+        .update({
+            bosses: participant.bosses + 1
+        })
+        .eq("id", participant.id)
+        .select("bosses")
         .single();
 
     if (error) {
         console.error(error);
-
         return res.status(500).json({
-            error: "Error obteniendo monedas"
-        });
-    }
-
-    if (!data) {
-        return res.status(404).json({
-            error: "Participante no encontrado"
-        });
-    }
-
-    const participante = data;
-
-    res.json(participante.monedas);
-});
-
-
-
-// ========================================
-// POST 
-// ========================================
-
-app.post("/api/participants/:discord_id/death/:slot", async (req, res) => {
-
-    const discord_id = String(req.params.discord_id);
-    const slot = Number(req.params.slot);
-
-    // Comprobar slot
-    if (slot < 1 || slot > 6) {
-        return res.status(400).json({
-            error: "Slot inválido"
-        });
-    }
-
-    // Buscar participante
-    const { data: participante, error: errorBusqueda } = await supabase
-        .from("participants")
-        .select("*")
-        .eq("discord_id", discord_id)
-        .maybeSingle();
-
-    if (errorBusqueda) {
-        console.error(errorBusqueda);
-        return res.status(500).json({
-            error: "Error obteniendo participante"
-        });
-    }
-
-    if (!participante) {
-        return res.status(404).json({
-            error: "Usuario no encontrado"
-        });
-    }
-
-    // Columna del Pokémon que ha muerto
-    const columnaPokemon = `pokemon_${slot}`;
-
-    // Poner el Pokémon a NULL
-    const updatePokemon = {};
-    updatePokemon[columnaPokemon] = null;
-
-    const { error: errorPokemon } = await supabase
-        .from("participants")
-        .update(updatePokemon)
-        .eq("discord_id", discord_id);
-
-    if (errorPokemon) {
-        console.error(errorPokemon);
-        return res.status(500).json({
-            error: "Error actualizando Pokémon"
-        });
-    }
-
-    // Incrementar muertes
-    const nuevasMuertes = participante.muertes + 1;
-
-    const { data, error: errorMuertes } = await supabase
-        .from("participants")
-        .update({
-            muertes: nuevasMuertes
-        })
-        .eq("discord_id", discord_id)
-        .select()
-        .single();
-
-    if (errorMuertes) {
-        console.error(errorMuertes);
-        return res.status(500).json({
-            error: "Error actualizando muertes"
-        });
-    }
-
-    res.json(data);
-});
-
-app.post("/api/participants/:discord_id/coins/add/", async (req, res) => {
-
-    const discord_id = String(req.params.discord_id);
-    const quantity = Number(req.body.monedas);
-
-    // Comprobar slot
-    if (!Number.isInteger(quantity) || quantity < 0) {
-        return res.status(400).json({
-            error: "La cantidad debe ser un número entero igual o mayor que 0"
-        });
-    }
-
-    // Buscar participante
-    const { data: participante, error: errorBusqueda } = await supabase
-        .from("participants")
-        .select("*")
-        .eq("discord_id", discord_id)
-        .maybeSingle();
-
-    if (errorBusqueda) {
-        console.error(errorBusqueda);
-        return res.status(500).json({
-            error: "Error obteniendo participante"
-        });
-    }
-
-    if (!participante) {
-        return res.status(404).json({
-            error: "Usuario no encontrado"
-        });
-    }
-
-
-    // Incrementar muertes
-    const monedasTotales = participante.monedas + quantity;
-
-    const { data, error: errorCoinsAdd } = await supabase
-        .from("participants")
-        .update({
-            monedas: monedasTotales
-        })
-        .eq("discord_id", discord_id)
-        .select()
-        .single();
-
-    if (errorCoinsAdd) {
-        console.error(errorCoinsAdd);
-        return res.status(500).json({
-            error: "Error actualizando monedas"
-        });
-    }
-
-    res.json(data);
-});
-
-
-app.post("/api/reservas/:discord_id/reservar", async (req, res) => {
-
-    const discord_id = String(req.params.discord_id);
-    const fecha = req.body.fecha;
-    const hora = req.body.hora;
-
-    // Comprobar que se han enviado fecha y hora
-    if (!fecha || !hora) {
-        return res.status(400).json({
-            error: "Debes proporcionar una fecha y una hora"
-        });
-    }
-
-    // Comprobar que existe el participante
-    const { data: participante, error: errorParticipante } = await supabase
-        .from("participants")
-        .select("discord_id, nombre")
-        .eq("discord_id", discord_id)
-        .maybeSingle();
-
-    if (errorParticipante) {
-        console.error(errorParticipante);
-        return res.status(500).json({
-            error: "Error obteniendo participante"
-        });
-    }
-
-    if (!participante) {
-        return res.status(404).json({
-            error: "Participante no encontrado"
-        });
-    }
-
-    // Comprobar que la reserva existe y está libre
-    const { data: reserva, error: errorReserva } = await supabase
-        .from("reservas")
-        .select("id, fecha, hora, discord_id")
-        .eq("fecha", fecha)
-        .eq("hora", hora)
-        .maybeSingle();
-
-    if (errorReserva) {
-        console.error(errorReserva);
-        return res.status(500).json({
-            error: "Error obteniendo reserva"
-        });
-    }
-
-    if (!reserva) {
-        return res.status(404).json({
-            error: "Ese horario no existe"
-        });
-    }
-
-    if (reserva.discord_id !== null) {
-        return res.status(400).json({
-            error: "Este horario ya está reservado"
-        });
-    }
-
-    // Reservar el horario
-    const { data, error } = await supabase
-        .from("reservas")
-        .update({
-            discord_id: discord_id
-        })
-        .eq("fecha", fecha)
-        .eq("hora", hora)
-        .is("discord_id", null)
-        .select()
-        .maybeSingle();
-
-    if (error) {
-        console.error(error);
-        return res.status(500).json({
-            error: "Error reservando el horario"
-        });
-    }
-
-    if (!data) {
-        return res.status(400).json({
-            error: "El horario ya no está disponible"
+            error: "Error actualizando contador de bosses"
         });
     }
 
     res.json({
-        mensaje: "Reserva realizada correctamente",
-        reserva: data
+        message: "Boss registrado correctamente",
+        bosses: data.bosses
     });
+
 });
 
-// ========================================
-// PUT 
-// ========================================
 
-app.put("/api/participants/:discord_id/boss", async (req, res) => {
 
-    const discord_id = String(req.params.discord_id);
+app.post("/api/participants/:discord_id/death/:slot", async (req, res) => {
 
-     // Buscar participante
-    const { data: participante, error: errorBusqueda } = await supabase
-        .from("participants")
-        .select("*")
-        .eq("discord_id", discord_id)
-        .maybeSingle();
+    const { discord_id, slot } = req.params;
+    const posicion = Number(slot);
 
-    if (errorBusqueda) {
-        console.error(errorBusqueda);
-        return res.status(500).json({
-            error: "Error obteniendo participante"
+    if (!Number.isInteger(posicion) || posicion < 1 || posicion > 6) {
+        return res.status(400).json({
+            error: "Posición Pokémon no válida"
         });
     }
 
-    if (!participante) {
-        return res.status(404).json({
-            error: "Usuario no encontrado"
-        });
-    }
-
-     // Incrementar muertes
-    const bossesCounter = participante.bosses + 1;
-
-    const { data, error: errorBosses } = await supabase
-        .from("participants")
-        .update({
-            bosses: bossesCounter
-        })
+    // 1. Buscar participante
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id, equipo_locke_id")
         .eq("discord_id", discord_id)
-        .select()
         .single();
 
-    if (errorBosses) {
-        console.error(errorBosses);
-        return res.status(500).json({
-            error: "Error actualizando bosses"
-        });
-    }
-
-    res.json(data);
-
-});
-
-
-app.put("/api/participants/:discord_id/pokemon/:slot", async (req, res) => {
-
-    const discord_id = String(req.params.discord_id);
-    const slot = Number(req.params.slot);
-    const nuevoPokemon = Number(req.body.pokemon);
-
-    // Comprobar slot
-    if (slot < 1 || slot > 6) {
-        return res.status(400).json({
-            error: "Slot inválido"
-        });
-    }
-
-    // Comprobar Pokémon
-    if (!Number.isInteger(nuevoPokemon) || nuevoPokemon < 1) {
-        return res.status(400).json({
-            error: "Debes proporcionar un número de Pokédex válido"
-        });
-    }
-
-    // Columna que queremos modificar
-    const columnaPokemon = `pokemon_${slot}`;
-
-    const update = {};
-    update[columnaPokemon] = nuevoPokemon;
-
-    // Actualizar en Supabase
-    const { data, error } = await supabase
-        .from("participants")
-        .update(update)
-        .eq("discord_id", discord_id)
-        .select()
-        .maybeSingle();
-
-    if (error) {
-        console.error(error);
-        return res.status(500).json({
-            error: "Error actualizando Pokémon"
-        });
-    }
-
-    if (!data) {
+    if (participantError || !participant) {
         return res.status(404).json({
             error: "Participante no encontrado"
         });
     }
 
-    res.json(data);
+    // 2. Buscar Pokémon en esa posición
+    const { data: pokemon, error: pokemonError } = await supabase
+        .from("pokemon")
+        .select("id, estado, mote")
+        .eq("participante_id", participant.id)
+        .eq("posicion", posicion)
+        .single();
+
+    if (pokemonError || !pokemon) {
+        return res.status(404).json({
+            error: "No hay ningún Pokémon en esa posición"
+        });
+    }
+
+    if (pokemon.estado === "Muerto") {
+        return res.status(400).json({
+            error: "Este Pokémon ya está muerto"
+        });
+    }
+
+    // 3. Marcar Pokémon como muerto y enviarlo a Caja
+    const { error: deathError } = await supabase
+        .from("pokemon")
+        .update({
+            estado: "Muerto",
+            ubicacion: "Caja",
+            posicion: null
+        })
+        .eq("id", pokemon.id);
+
+    if (deathError) {
+        console.error(deathError);
+        return res.status(500).json({
+            error: "Error registrando la muerte del Pokémon"
+        });
+    }
+
+    // 4. Restar una vida al equipo
+    const { data: team, error: teamError } = await supabase
+        .from("equipos_locke")
+        .select("vidas")
+        .eq("id", participant.equipo_locke_id)
+        .single();
+
+    if (teamError || !team) {
+        console.error(teamError);
+        return res.status(500).json({
+            error: "Error obteniendo el equipo"
+        });
+    }
+
+    const { error: updateTeamError } = await supabase
+        .from("equipos_locke")
+        .update({
+            vidas: team.vidas - 1
+        })
+        .eq("id", participant.equipo_locke_id);
+
+    if (updateTeamError) {
+        console.error(updateTeamError);
+        return res.status(500).json({
+            error: "Pokémon marcado como muerto, pero no se pudo descontar la vida"
+        });
+    }
+
+    res.json({
+        message: "Pokémon muerto correctamente",
+        pokemon: pokemon.mote,
+        posicion: posicion,
+        vidas_restantes: team.vidas - 1
+    });
+
 });
 
 
-app.put("/api/participants/:discord_id/coins/trade", async (req, res) => {
+app.post("/api/participants/:discord_id/pokemon", async (req, res) => {
 
-    const discord_id = String(req.params.discord_id);
+    const { discord_id } = req.params;
 
-    const quantity = Number(req.body.monedas);
+    const {
+        especie_id,
+        mote = null,
+        lugar_obtencion,
+        metodo_obtencion
+    } = req.body ?? {};
 
-    if (!Number.isInteger(quantity) || quantity <= 0) {
+    // 1. Validar datos recibidos
+    const especieId = Number(especie_id);
+
+    if (!Number.isInteger(especieId) || especieId <= 0) {
         return res.status(400).json({
-            error: "La cantidad debe ser un número entero mayor que 0"
+            error: "Especie Pokémon no válida"
+        });
+    }
+
+    if (!lugar_obtencion || !metodo_obtencion) {
+        return res.status(400).json({
+            error: "Falta el lugar o método de obtención"
+        });
+    }
+
+    // 2. Buscar participante
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id")
+        .eq("discord_id", discord_id)
+        .single();
+
+    if (participantError || !participant) {
+        return res.status(404).json({
+            error: "Participante no encontrado"
+        });
+    }
+
+    // 3. Obtener posiciones ocupadas del equipo
+    const { data: teamPokemon, error: pokemonError } = await supabase
+        .from("pokemon")
+        .select("posicion")
+        .eq("participante_id", participant.id)
+        .eq("estado", "Vivo")
+        .eq("ubicacion", "Equipo");
+
+    if (pokemonError) {
+        console.error(pokemonError);
+        return res.status(500).json({
+            error: "Error obteniendo Pokémon del participante"
+        });
+    }
+
+    // 4. Buscar primer hueco disponible (1-6)
+    const occupiedSlots = new Set(
+        teamPokemon.map(pokemon => pokemon.posicion)
+    );
+
+    let posicion = null;
+
+    for (let i = 1; i <= 6; i++) {
+        if (!occupiedSlots.has(i)) {
+            posicion = i;
+            break;
+        }
+    }
+
+    // 5. Determinar ubicación
+    const ubicacion = posicion !== null ? "Equipo" : "Caja";
+
+    // 6. Insertar Pokémon
+    const { data: newPokemon, error: insertError } = await supabase
+        .from("pokemon")
+        .insert({
+            especie_id: especieId,
+            participante_id: participant.id,
+            participante_original_id: participant.id,
+            mote: mote,
+            estado: "Vivo",
+            ubicacion: ubicacion,
+            posicion: posicion,
+            lugar_obtencion: lugar_obtencion,
+            metodo_obtencion: metodo_obtencion
+        })
+        .select()
+        .single();
+
+    if (insertError) {
+        console.error(insertError);
+        return res.status(500).json({
+            error: "Error registrando el Pokémon"
+        });
+    }
+
+    // 7. Respuesta
+    res.status(201).json({
+        message: "Pokémon registrado correctamente",
+        pokemon: newPokemon,
+        ubicacion: ubicacion,
+        posicion: posicion
+    });
+
+});
+
+
+
+app.post("/api/participants/:discord_id/pokemon/swap", async (req, res) => {
+    const { discord_id } = req.params;
+    const { pokemon_equipo_id, pokemon_pc_id } = req.body ?? {};
+
+    const equipoId = Number(pokemon_equipo_id);
+    const pcId = Number(pokemon_pc_id);
+
+    // Validar IDs
+    if (
+        !Number.isInteger(equipoId) || equipoId <= 0 ||
+        !Number.isInteger(pcId) || pcId <= 0 ||
+        equipoId === pcId
+    ) {
+        return res.status(400).json({
+            error: "Los IDs de los Pokémon no son válidos"
         });
     }
 
     // Buscar participante
-    const { data: participante, error: errorBusqueda } = await supabase
-        .from("participants")
-        .select("*")
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id")
         .eq("discord_id", discord_id)
         .maybeSingle();
 
-    if (errorBusqueda) {
-        console.error(errorBusqueda);
+    if (participantError) {
+        console.error(participantError);
         return res.status(500).json({
-            error: "Error obteniendo participante"
+            error: "Error buscando al participante"
         });
     }
 
-    if (!participante) {
+    if (!participant) {
         return res.status(404).json({
-            error: "Usuario no encontrado"
+            error: "Participante no encontrado"
         });
     }
 
-    if (participante.monedas < quantity) {
+    // Ejecutar intercambio mediante RPC
+    const { data, error } = await supabase.rpc("swap_pokemon", {
+        p_participante_id: participant.id,
+        p_pokemon_equipo_id: equipoId,
+        p_pokemon_pc_id: pcId
+    });
+
+    if (error) {
+        console.error(error);
+
+        return res.status(error.code === "P0001" ? 400 : 500).json({
+            error: error.message || "Error realizando el intercambio"
+        });
+    }
+
+    res.json(data);
+});
+
+//TODO: Probar
+app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-box", async (req, res) => {
+    const { discord_id, pokemon_id } = req.params;
+
+    // Validar ID del Pokémon
+    const pokemonId = Number(pokemon_id);
+
+    if (!Number.isInteger(pokemonId) || pokemonId <= 0) {
         return res.status(400).json({
-            error: "No tienes suficientes monedas"
+            error: "ID de Pokémon no válido"
         });
     }
 
-    const monedasTotales = participante.monedas - quantity;
-
-    // Actualizar en Supabase
-    const { data, error } = await supabase
-        .from("participants")
-        .update({
-            monedas: monedasTotales
-        })
+    // Buscar participante
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id")
         .eq("discord_id", discord_id)
-        .select()
         .maybeSingle();
 
-    if (error) {
-        console.error(error);
-        return res.status(500).json({
-            error: "Error actualizando Monedas"
-        });
-    }
-
-    if (!data) {
+    if (participantError || !participant) {
         return res.status(404).json({
             error: "Participante no encontrado"
         });
     }
 
-    res.json(data);
-});
-
-// =====================
-// PATCH
-// =====================
-
-app.patch("/api/participants/:discord_id/island", async (req, res) => {
-
-    const discord_id = String(req.params.discord_id);
-    const isla = String(req.body.isla);
-
-    
-
-    // Actualizar en Supabase
-    const { data, error } = await supabase
-        .from("participants")
-        .update({
-            isla: isla
-        })
-        .eq("discord_id", discord_id)
-        .select()
+    // Comprobar que el Pokémon pertenece actualmente al participante
+    const { data: pokemon, error: pokemonError } = await supabase
+        .from("pokemon")
+        .select("id, mote, posicion, estado, ubicación")
+        .eq("id", pokemonId)
+        .eq("participante_id", participant.id)
         .maybeSingle();
 
-    if (error) {
-        console.error(error);
+    if (pokemonError) {
+        console.error(pokemonError);
         return res.status(500).json({
-            error: "Error actualizando Isla"
+            error: "Error buscando el Pokémon"
         });
     }
 
-    if (!data) {
+    if (!pokemon) {
+        return res.status(404).json({
+            error: "Pokémon no encontrado para este participante"
+        });
+    }
+
+    if (pokemon.estado !== "Vivo") {
+        return res.status(400).json({
+            error: "No se puede mover un Pokémon que no está vivo"
+        });
+    }
+
+    if (pokemon.ubicación !== "Equipo") {
+        return res.status(400).json({
+            error: "El Pokémon ya está en la Caja"
+        });
+    }
+
+    // Mover a la Caja y liberar su posición
+    const { data: updatedPokemon, error: updateError } = await supabase
+        .from("pokemon")
+        .update({
+            ubicación: "Caja",
+            posicion: null
+        })
+        .eq("id", pokemonId)
+        .eq("participante_id", participant.id)
+        .select()
+        .single();
+
+    if (updateError) {
+        console.error(updateError);
+        return res.status(500).json({
+            error: "Error enviando el Pokémon a la Caja"
+        });
+    }
+
+    res.json({
+        message: "Pokémon enviado a la Caja correctamente",
+        pokemon: updatedPokemon
+    });
+});
+
+app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-team", async (req, res) => {
+    const { discord_id, pokemon_id } = req.params;
+
+    // Validar ID del Pokémon
+    const pokemonId = Number(pokemon_id);
+
+    if (!Number.isInteger(pokemonId) || pokemonId <= 0) {
+        return res.status(400).json({
+            error: "ID de Pokémon no válido"
+        });
+    }
+
+    // Buscar participante
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id")
+        .eq("discord_id", discord_id)
+        .maybeSingle();
+
+    if (participantError || !participant) {
         return res.status(404).json({
             error: "Participante no encontrado"
         });
     }
 
-    res.json(data);
-});
+    // Comprobar que el Pokémon pertenece actualmente al participante
+    const { data: pokemon, error: pokemonError } = await supabase
+        .from("pokemon")
+        .select("id, mote, estado, ubicación")
+        .eq("id", pokemonId)
+        .eq("participante_id", participant.id)
+        .maybeSingle();
 
+    if (pokemonError) {
+        console.error(pokemonError);
+        return res.status(500).json({
+            error: "Error buscando el Pokémon"
+        });
+    }
+
+    if (!pokemon) {
+        return res.status(404).json({
+            error: "Pokémon no encontrado para este participante"
+        });
+    }
+
+    if (pokemon.estado !== "Vivo") {
+        return res.status(400).json({
+            error: "No se puede mover un Pokémon que no está vivo"
+        });
+    }
+
+    if (pokemon.ubicación !== "Caja") {
+        return res.status(400).json({
+            error: "El Pokémon ya está en el Equipo"
+        });
+    }
+
+    // Obtener posiciones ocupadas del equipo
+    const { data: teamPokemon, error: teamError } = await supabase
+        .from("pokemon")
+        .select("posicion")
+        .eq("participante_id", participant.id)
+        .eq("estado", "Vivo")
+        .eq("ubicación", "Equipo");
+
+    if (teamError) {
+        console.error(teamError);
+        return res.status(500).json({
+            error: "Error consultando el equipo"
+        });
+    }
+
+    // Encontrar primera posición libre
+    const occupiedSlots = new Set(
+        teamPokemon.map(p => p.posicion)
+    );
+
+    let posicion = null;
+
+    for (let i = 1; i <= 6; i++) {
+        if (!occupiedSlots.has(i)) {
+            posicion = i;
+            break;
+        }
+    }
+
+    // Equipo completo
+    if (posicion === null) {
+        return res.status(400).json({
+            error: "El equipo está completo. Envía primero un Pokémon a la Caja."
+        });
+    }
+
+    // Mover Pokémon al equipo
+    const { data: updatedPokemon, error: updateError } = await supabase
+        .from("pokemon")
+        .update({
+            ubicación: "Equipo",
+            posicion: posicion
+        })
+        .eq("id", pokemonId)
+        .eq("participante_id", participant.id)
+        .select()
+        .single();
+
+    if (updateError) {
+        console.error(updateError);
+        return res.status(500).json({
+            error: "Error incorporando el Pokémon al equipo"
+        });
+    }
+
+    res.json({
+        message: "Pokémon incorporado al equipo correctamente",
+        pokemon: updatedPokemon,
+        posicion: posicion
+    });
+});
 
 // ========================================
 // Iniciar servidor

@@ -10825,6 +10825,164 @@ textarea.form-control-lg {
   }
 }
 
+
+/* =========================================
+   TARJETAS DE EQUIPOS
+========================================= */
+
+.team-card {
+    border-radius: 18px;
+    overflow: hidden;
+    border: none;
+}
+
+.team-header {
+    background-color: #212529;
+    color: white;
+    padding: 18px;
+}
+
+.team-header h2 {
+    font-size: 1.7rem;
+    font-weight: bold;
+}
+
+
+/* =========================================
+   PARTICIPANTES
+========================================= */
+
+.participant-section {
+    height: 100%;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    background-color: #fafafa;
+}
+
+.profile-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border: 2px solid #dee2e6;
+}
+
+.participant-name {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+/* .participant-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+} */
+
+.bosses-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d4af37;
+}
+
+
+/* =========================================
+   VIDAS COMPARTIDAS
+========================================= */
+
+/* .shared-lives {
+    background-color: #fff3cd;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.lives-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #dc3545;
+} */
+
+.shared-lives {
+    background-color: #e3e1da;
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.lives-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+
+/* =========================================
+   EQUIPO POKÉMON
+========================================= */
+
+.pokemon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.pokemon-slot {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+.pokemon-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.empty-slot {
+    border: 2px dashed #ced4da;
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    font-size: 2rem;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 767px) {
+
+    .team-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .participant-name {
+        font-size: 1.2rem;
+    }
+
+    .profile-img {
+        width: 55px;
+        height: 55px;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /* NEW */
 
 .participant-card {
@@ -10884,59 +11042,12 @@ textarea.form-control-lg {
     font-weight: bold;
 }
 
-/*  
-=================================
-        TIENDA
-=================================
-*/
-
-.shop-title {
-    color: #e03a3a;
-    border-left: 6px solid #d11d1d;
-    padding-left: 12px;
-    font-weight: bold;
-}
-
-.shop-table {
-    width: 100%;
-    border: 2px solid #e03a3a;
-}
-
-/* Ancho de las columnas */
-.shop-table th:first-child,
-.shop-table td:first-child {
-    width: 70%;
-}
-
-.shop-table th:last-child,
-.shop-table td:last-child {
-    width: 30%;
-}
-
-/* Alineación de la columna de niveles */
-.shop-table th:last-child,
-.shop-table td:last-child {
-    text-align: center;
-}
-
-/* Cabecera naranja */
-.shop-table thead {
-    background-color: #e03a3a;
-    color: white;
-}
-
-/* Efecto al pasar el ratón */
-.shop-table tbody tr:hover {
-    background-color: #fff1df;
-}
-
-
 
 
 /* Tablas de Level Caps */
 .level-cap-table {
     width: 100%;
-    border: 2px solid #f28c28;
+    border: 2px solid #d11e1b;
 }
 
 /* Ancho de las columnas */
@@ -10958,7 +11069,7 @@ textarea.form-control-lg {
 
 /* Cabecera naranja */
 .level-cap-table thead {
-    background-color: #f28c28;
+    background-color: #d11e1b;
     color: white;
 }
 
@@ -10969,8 +11080,8 @@ textarea.form-control-lg {
 
 /* Títulos de las islas */
 .island-title {
-    color: #f28c28;
-    border-left: 6px solid #f28c28;
+    color: #b8201d;
+    border-left: 6px solid #b8201d;
     padding-left: 12px;
     font-weight: bold;
 }
@@ -11485,3 +11596,156 @@ CONTENEDOR
     }
 }
 
+/* 
+================================
+================================
+=        Hall Of Fame          =
+================================
+================================ */
+
+
+/* Fila de cada participante */
+.participant-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    padding: 15px;
+    margin-bottom: 12px;
+
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+/* Información del participante */
+.participant-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* Foto */
+.profile-img {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+}
+
+/* Estadísticas */
+.participant-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.participant-stats h5 {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Muertes */
+.death-number {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+/* Bosses */
+.bosses-number {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #d4af37;
+}
+
+/* Contenedor de Pokémon */
+.pokemon-container {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+/* Cada Pokémon */
+.pokemon-slot {
+    flex: 1;
+    max-width: 85px;
+    aspect-ratio: 1 / 1;
+
+    background-color: #f1f1f1;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+.pokemon-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+
+    .participant-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .participant-info {
+        width: 100%;
+    }
+
+    .pokemon-container {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .pokemon-slot {
+        flex: 0 0 calc(16.666% - 9px);
+        max-width: none;
+    }
+}
+
+
+
+/* =========================================
+   POKERANCHO
+========================================= */
+
+.table th {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.table td {
+    min-width: 100px;
+}
+
+.table td:first-child {
+    min-width: 85px;
+}
+
+.table tbody tr {
+    height: 85px;
+}
+
+.table-responsive {
+    background-color: white;
+}
+
+#tablaPokemon img {
+    transition: transform 0.2s ease;
+}
+
+#tablaPokemon img:hover {
+    transform: scale(1.2);
+}

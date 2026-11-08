@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="description" content="Pokérancho del Shin-Shibuya RandomLocke" />
+
+    <title>PokéRancho - Shin-Shibuya RandomLocke</title>
+
+    <link rel="icon" type="image/x-icon" href="assets/favicon.jpg" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+
+            <a class="navbar-brand" href="index.html">
+                <img src="assets/YLockeEstudia_NoFondo.png"
+                     alt="Logo Ultra Sol Randomlocke"
+                     class="me-2"
+                     height="50">
+            </a>
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Abrir navegación">
+
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="rules.html">Normas</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="levelcap.html">Level Caps</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active"
+                           aria-current="page"
+                           href="pokerancho.html">PokéRancho</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="halloffame.html">Hall of Fame</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                           id="navbarDropdown"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+
+                            Ruletas
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="prizenohit.html">
+                                    Números
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="prizelessd.html">
+                                    Tipos
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="prizecombate.html">
+                                    Recompensa Combate
+                                </a>
+                            </li>
+                        </ul>
+
+                    </li>
+
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+
+                            Herramientas de Utilidad
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+                            <li>
+                                <a class="dropdown-item" href="natures.html">
+                                    Naturalezas
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="tabletype.html">
+                                    Tabla de Tipos
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   href="https://pokemondb.net/pokedex/all"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Stats Pokémon
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   href="https://pokemondb.net/pokedex/shiny"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Shiny Pokémon
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- CONTENIDO -->
+    <div class="container">
+
+        <div class="text-center mt-5">
+
+            <h1>🌴 Bienvenidos al PokéRancho 🌴</h1>
+
+            <p class="lead">
+                Lugar donde podréis cotillear vuestros Pokémon y los de otros participantes.
+            </p>
+
+        </div>
+
+
+        <!-- FILTROS -->
+        <div class="card shadow mt-5 mb-4">
+
+            <div class="card-header">
+                <h4 class="mb-0">🔎 Filtros de búsqueda</h4>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <!-- PARTICIPANTE -->
+                    <div class="col-12 col-md-4">
+
+                        <label for="filtroParticipante" class="form-label">
+                            Participante
+                        </label>
+
+                        <select id="filtroParticipante" class="form-select">
+
+                            <option value="">
+                                Todos los participantes
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ESTADO -->
+                    <div class="col-12 col-md-4">
+
+                        <label for="filtroEstado" class="form-label">
+                            Estado
+                        </label>
+
+                        <select id="filtroEstado" class="form-select">
+
+                            <option value="">
+                                Todos los estados
+                            </option>
+
+                            <option value="Vivo">
+                                ❤️ Vivo
+                            </option>
+
+                            <option value="Muerto">
+                                💀 Muerto
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- UBICACION -->
+                    <div class="col-12 col-md-4">
+
+                        <label for="filtroUbicacion" class="form-label">
+                            Ubicación
+                        </label>
+
+                        <select id="filtroUbicacion" class="form-select">
+
+                            <option value="">
+                                Todas las ubicaciones
+                            </option>
+
+                            <option value="Equipo">
+                                ⚔️ Equipo
+                            </option>
+
+                            <option value="Caja">
+                                📦 Caja
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOTONES -->
+                <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <button id="btnLimpiar"
+                            class="btn btn-outline-secondary">
+
+                        Limpiar filtros
+
+                    </button>
+
+                    <button id="btnFiltrar"
+                            class="btn btn-primary">
+
+                        Buscar
+
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- RESULTADOS -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+
+            <h3 class="mb-2">
+                📖 Pokémon registrados
+            </h3>
+
+            <div class="d-flex align-items-center gap-2">
+
+                <label for="limitePagina" class="form-label mb-0">
+                    Mostrar:
+                </label>
+
+                <select id="limitePagina" class="form-select form-select-sm"
+                        style="width: auto;">
+
+                    <option value="10">10</option>
+                    <option value="20" selected>20</option>
+                    <option value="50">50</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLA -->
+        <div class="table-responsive shadow rounded mb-3">
+
+            <table class="table table-hover table-striped align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th class="text-center">Imagen</th>
+                        <th>Especie</th>
+                        <th>Mote</th>
+                        <th>Propietario</th>
+                        <th>Estado</th>
+                        <th>Ubicación</th>
+                        <th>Lugar obtención</th>
+                        <th>Método obtención</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaPokemon">
+
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            Cargando Pokémon...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- INFORMACIÓN Y PAGINACIÓN -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-5 gap-3">
+
+            <p id="infoResultados" class="text-muted mb-0">
+                Cargando resultados...
+            </p>
+
+            <nav aria-label="Paginación de Pokémon">
+
+                <ul class="pagination mb-0">
+
+                    <li class="page-item" id="paginaAnterior">
+                        <button class="page-link">
+                            Anterior
+                        </button>
+                    </li>
+
+                    <li class="page-item disabled">
+                        <span class="page-link" id="numeroPagina">
+                            1 / 1
+                        </span>
+                    </li>
+
+                    <li class="page-item" id="paginaSiguiente">
+                        <button class="page-link">
+                            Siguiente
+                        </button>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOOTSTRAP -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JAVASCRIPT -->
+    <script src="js/pokerancho.js"></script>
+
+</body>
+</html>
