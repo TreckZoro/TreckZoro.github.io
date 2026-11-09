@@ -3,7 +3,7 @@ const cors = require("cors");
 const supabase = require("./supabase");
 
 const app = express();
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT || 3005; // el error esta aqui
 
 // Permite recibir JSON en req.body
 app.use(cors());
@@ -14,6 +14,10 @@ app.use(express.json());
 // GET /api/participants
 // Obtener todos los Participantes
 // ========================================
+
+app.get("/", (req, res) => {
+    res.send("¡ESTE ES MI BACKEND!");
+});
 
 
 //Informacion general
