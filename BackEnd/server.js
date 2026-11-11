@@ -3,7 +3,7 @@ const cors = require("cors");
 const supabase = require("./supabase");
 
 const app = express();
-const PORT = process.env.PORT || 3005; // el error esta aqui
+const PORT = process.env.PORT || 3005;
 
 // Permite recibir JSON en req.body
 app.use(cors());
