@@ -436,6 +436,69 @@ app.get("/api/pokemon/filters", async (req, res) => {
 
 });
 
+app.get("/api/participants/:discord_id/pokemon/opciones", async (req, res) => {
+
+    const { discord_id } = req.params;
+    const { ubicacion } = req.query;
+
+    // 1. Validar ubicación
+    if (!["Equipo", "Caja"].includes(ubicacion)) {
+        return res.status(400).json({
+            error: "Ubicación no válida"
+        });
+    }
+
+    // 2. Buscar participante
+    const { data: participant, error: participantError } = await supabase
+        .from("participantes")
+        .select("id")
+        .eq("discord_id", discord_id)
+        .maybeSingle();
+
+    if (participantError) {
+        console.error("Error buscando participante:", participantError);
+
+        return res.status(500).json({
+            error: "Error buscando al participante"
+        });
+    }
+
+    if (!participant) {
+        return res.status(404).json({
+            error: "Participante no encontrado"
+        });
+    }
+
+    // 3. Obtener Pokémon disponibles en esa ubicación
+    const { data: pokemonData, error: pokemonError } = await supabase
+        .from("pokemon")
+        .select(`
+            id,
+            especie_id,
+            mote,
+            posicion,
+            lugar_obtencion
+        `)
+        .eq("participante_id", participant.id)
+        .eq("estado", "Vivo")
+        .eq("ubicacion", ubicacion)
+        .order("id", { ascending: true })
+        .limit(2000);
+
+    if (pokemonError) {
+        console.error("Error obteniendo Pokémon:", pokemonError);
+
+        return res.status(500).json({
+            error: "Error obteniendo Pokémon"
+        });
+    }
+
+    // 4. Devolver Pokémon disponibles
+    return res.json({
+        pokemon: pokemonData
+    });
+});
+
 
 /// ===================================
 //              POST
