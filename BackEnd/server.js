@@ -299,7 +299,7 @@ app.get("/api/pokemon", async (req, res) => {
 
     if (ubicacion && !["Equipo", "Caja"].includes(ubicacion)) {
         return res.status(400).json({
-            error: "Ubicación no válida"
+            error: "ubicación no válida"
         });
     }
 
@@ -444,7 +444,7 @@ app.get("/api/participants/:discord_id/pokemon/opciones", async (req, res) => {
     // 1. Validar ubicación
     if (!["Equipo", "Caja"].includes(ubicacion)) {
         return res.status(400).json({
-            error: "Ubicación no válida"
+            error: "ubicación no válida"
         });
     }
 
@@ -920,7 +920,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-team", async (req
     // Comprobar que el Pokémon pertenece actualmente al participante
     const { data: pokemon, error: pokemonError } = await supabase
         .from("pokemon")
-        .select("id, mote, estado, ubicación")
+        .select("id, mote, estado, ubicacion")
         .eq("id", pokemonId)
         .eq("participante_id", participant.id)
         .maybeSingle();
