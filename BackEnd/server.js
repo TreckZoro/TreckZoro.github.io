@@ -299,7 +299,7 @@ app.get("/api/pokemon", async (req, res) => {
 
     if (ubicacion && !["Equipo", "Caja"].includes(ubicacion)) {
         return res.status(400).json({
-            error: "ubicación no válida"
+            error: "ubicacion no válida"
         });
     }
 
@@ -441,10 +441,10 @@ app.get("/api/participants/:discord_id/pokemon/opciones", async (req, res) => {
     const { discord_id } = req.params;
     const { ubicacion } = req.query;
 
-    // 1. Validar ubicación
+    // 1. Validar ubicacion
     if (!["Equipo", "Caja"].includes(ubicacion)) {
         return res.status(400).json({
-            error: "ubicación no válida"
+            error: "ubicacion no válida"
         });
     }
 
@@ -469,7 +469,7 @@ app.get("/api/participants/:discord_id/pokemon/opciones", async (req, res) => {
         });
     }
 
-    // 3. Obtener Pokémon disponibles en esa ubicación
+    // 3. Obtener Pokémon disponibles en esa ubicacion
     const { data: pokemonData, error: pokemonError } = await supabase
         .from("pokemon")
         .select(`
@@ -713,7 +713,7 @@ app.post("/api/participants/:discord_id/pokemon", async (req, res) => {
         }
     }
 
-    // 5. Determinar ubicación
+    // 5. Determinar ubicacion
     const ubicacion = posicion !== null ? "Equipo" : "Caja";
 
     // 6. Insertar Pokémon
@@ -837,7 +837,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-box", async (req,
     // Comprobar que el Pokémon pertenece actualmente al participante
     const { data: pokemon, error: pokemonError } = await supabase
         .from("pokemon")
-        .select("id, mote, posicion, estado, ubicación")
+        .select("id, mote, posicion, estado, ubicacion")
         .eq("id", pokemonId)
         .eq("participante_id", participant.id)
         .maybeSingle();
@@ -861,7 +861,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-box", async (req,
         });
     }
 
-    if (pokemon.ubicación !== "Equipo") {
+    if (pokemon.ubicacion !== "Equipo") {
         return res.status(400).json({
             error: "El Pokémon ya está en la Caja"
         });
@@ -871,7 +871,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-box", async (req,
     const { data: updatedPokemon, error: updateError } = await supabase
         .from("pokemon")
         .update({
-            ubicación: "Caja",
+            ubicacion: "Caja",
             posicion: null
         })
         .eq("id", pokemonId)
@@ -944,7 +944,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-team", async (req
         });
     }
 
-    if (pokemon.ubicación !== "Caja") {
+    if (pokemon.ubicacion !== "Caja") {
         return res.status(400).json({
             error: "El Pokémon ya está en el Equipo"
         });
@@ -956,7 +956,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-team", async (req
         .select("posicion")
         .eq("participante_id", participant.id)
         .eq("estado", "Vivo")
-        .eq("ubicación", "Equipo");
+        .eq("ubicacion", "Equipo");
 
     if (teamError) {
         console.error(teamError);
@@ -990,7 +990,7 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-team", async (req
     const { data: updatedPokemon, error: updateError } = await supabase
         .from("pokemon")
         .update({
-            ubicación: "Equipo",
+            ubicacion: "Equipo",
             posicion: posicion
         })
         .eq("id", pokemonId)
