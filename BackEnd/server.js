@@ -499,6 +499,119 @@ app.get("/api/participants/:discord_id/pokemon/opciones", async (req, res) => {
     });
 });
 
+app.get("/api/participants/:discord_id/pokemon/:pokemon_id/evoluciones", async (req, res) => {
+
+    const { discord_id, pokemon_id } = req.params;
+
+    const pokemonId = Number(pokemon_id);
+
+    // 1. Validar ID del Pokémon
+    if (!Number.isInteger(pokemonId) || pokemonId <= 0) {
+        return res.status(400).json({
+            error: "El ID del Pokémon no es válido"
+        });
+    }
+
+    try {
+
+        // 2. Buscar participante
+        const { data: participante, error: participanteError } = await supabase
+            .from("participantes")
+            .select("id")
+            .eq("discord_id", discord_id)
+            .maybeSingle();
+
+        if (participanteError) {
+            console.error(participanteError);
+
+            return res.status(500).json({
+                error: "Error buscando al participante"
+            });
+        }
+
+        if (!participante) {
+            return res.status(404).json({
+                error: "Participante no encontrado"
+            });
+        }
+
+        // 3. Buscar Pokémon del participante
+        const { data: pokemonActual, error: pokemonError } = await supabase
+            .from("pokemon")
+            .select("id, especie_id, mote, estado, ubicacion, posicion")
+            .eq("id", pokemonId)
+            .eq("participante_id", participante.id)
+            .maybeSingle();
+
+        if (pokemonError) {
+            console.error(pokemonError);
+
+            return res.status(500).json({
+                error: "Error buscando al Pokémon"
+            });
+        }
+
+        if (!pokemonActual) {
+            return res.status(404).json({
+                error: "Pokémon no encontrado"
+            });
+        }
+
+        // 4. Comprobar que el Pokémon está vivo
+        if (pokemonActual.estado !== "Vivo") {
+            return res.status(400).json({
+                error: "Solo pueden evolucionar Pokémon vivos"
+            });
+        }
+
+        // 5. Consultar evoluciones disponibles
+        const { data: evoluciones, error: evolucionesError } = await supabase
+            .from("pokemon_evoluciones")
+            .select(`
+                especie_destino_id,
+                pokemon_especies!pokemon_evoluciones_especie_destino_id_fkey (
+                    id,
+                    nombre_es,
+                    nombre_en
+                )
+            `)
+            .eq("especie_origen_id", pokemonActual.especie_id);
+
+        if (evolucionesError) {
+            console.error(evolucionesError);
+
+            return res.status(500).json({
+                error: "Error consultando las evoluciones disponibles"
+            });
+        }
+
+        // 6. Devolver resultado
+        return res.json({
+            pokemon: {
+                id: pokemonActual.id,
+                especie_id: pokemonActual.especie_id,
+                mote: pokemonActual.mote,
+                estado: pokemonActual.estado,
+                ubicacion: pokemonActual.ubicacion,
+                posicion: pokemonActual.posicion
+            },
+            evoluciones: evoluciones.map(e => ({
+                especie_id: e.especie_destino_id,
+                nombre_es: e.pokemon_especies.nombre_es,
+                nombre_en: e.pokemon_especies.nombre_en
+            }))
+        });
+
+    } catch (error) {
+
+        console.error("Error consultando evoluciones:", error);
+
+        return res.status(500).json({
+            error: "Error interno consultando las evoluciones"
+        });
+    }
+});
+
 
 /// ===================================
 //              POST
@@ -808,7 +921,7 @@ app.post("/api/participants/:discord_id/pokemon/swap", async (req, res) => {
     res.json(data);
 });
 
-//TODO: Probar
+
 app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-box", async (req, res) => {
     const { discord_id, pokemon_id } = req.params;
 
@@ -1010,6 +1123,91 @@ app.post("/api/participants/:discord_id/pokemon/:pokemon_id/to-team", async (req
         pokemon: updatedPokemon,
         posicion: posicion
     });
+});
+
+app.post("/api/participants/:discord_id/pokemon/:pokemon_id/evolucionar", async (req, res) => {
+
+    const { discord_id, pokemon_id } = req.params;
+    const { especie_destino_id } = req.body ?? {};
+
+    // 1. Validar los identificadores recibidos
+    const pokemonId = Number(pokemon_id);
+    const especieDestinoId = Number(especie_destino_id);
+
+    if (!Number.isInteger(pokemonId) || pokemonId <= 0) {
+        return res.status(400).json({
+            error: "El ID del Pokémon no es válido"
+        });
+    }
+
+    if (!Number.isInteger(especieDestinoId) || especieDestinoId <= 0) {
+        return res.status(400).json({
+            error: "El ID de la especie de destino no es válido"
+        });
+    }
+
+    try {
+
+        // 2. Buscar al participante mediante su Discord ID
+        const { data: participante, error: participanteError } = await supabase
+            .from("participantes")
+            .select("id")
+            .eq("discord_id", discord_id)
+            .maybeSingle();
+
+        if (participanteError) {
+            console.error("Error buscando participante:", participanteError);
+
+            return res.status(500).json({
+                error: "Error buscando al participante"
+            });
+        }
+
+        if (!participante) {
+            return res.status(404).json({
+                error: "Participante no encontrado"
+            });
+        }
+
+        // 3. Ejecutar la función RPC de evolución
+        const { data: resultado, error: rpcError } = await supabase.rpc(
+            "evolucionar_pokemon",
+            {
+                p_participante_id: participante.id,
+                p_pokemon_id: pokemonId,
+                p_especie_destino_id: especieDestinoId
+            }
+        );
+
+        if (rpcError) {
+            console.error("Error ejecutando evolución:", rpcError);
+
+            return res.status(500).json({
+                error: "Error ejecutando la evolución del Pokémon"
+            });
+        }
+
+        // 4. Comprobar el resultado de la RPC
+        if (!resultado.success) {
+            return res.status(400).json({
+                error: resultado.error
+            });
+        }
+
+        // 5. Devolver el resultado
+        return res.json({
+            mensaje: resultado.mensaje,
+            pokemon: resultado.pokemon
+        });
+
+    } catch (error) {
+
+        console.error("Error evolucionando Pokémon:", error);
+
+        return res.status(500).json({
+            error: "Error interno del servidor"
+        });
+    }
 });
 
 // ========================================
