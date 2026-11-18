@@ -40,7 +40,7 @@
 
 const prizes = [
     { name: "Nada", probability: 20 },
-    { name: "???", probability: 20 },
+    { name: "Huevo Extra", probability: 20 },
     { name: "Cambia natu", probability: 20 },
     { name: "❤️ Extra", probability: 20 },
     { name: "Capsula Habilidad", probability: 20 }
